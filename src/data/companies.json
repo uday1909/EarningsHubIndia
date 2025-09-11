@@ -1,0 +1,124 @@
+{
+  "companies": [
+    {
+      "id": 1,
+      "name": "Tata Consultancy Services",
+      "symbol": "TCS",
+      "sector": "IT Services",
+      "quarters": [
+        {
+          "quarter": "Q3 FY24",
+          "revenue": "₹59,162 Cr",
+          "growth": "+4.1%",
+          "profit": "₹11,058 Cr",
+          "profitGrowth": "+7.2%",
+          "callDate": "Jan 11, 2024",
+          "status": "completed",
+          "recordings": [
+            { "type": "earnings-call", "duration": "45 min", "url": "#" },
+            { "type": "presentation", "pages": "32 slides", "url": "#" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Infosys Limited",
+      "symbol": "INFY",
+      "sector": "IT Services",
+      "quarters": [
+        {
+          "quarter": "Q3 FY24",
+          "revenue": "₹37,923 Cr",
+          "growth": "+1.6%",
+          "profit": "₹6,586 Cr",
+          "profitGrowth": "+7.9%",
+          "callDate": "Jan 11, 2024",
+          "status": "completed",
+          "recordings": [
+            { "type": "earnings-call", "duration": "42 min", "url": "#" },
+            { "type": "presentation", "pages": "28 slides", "url": "#" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Reliance Industries",
+      "symbol": "RIL",
+      "sector": "Conglomerate",
+      "quarters": [
+        {
+          "quarter": "Q3 FY24",
+          "revenue": "₹2,35,122 Cr",
+          "growth": "+8.8%",
+          "profit": "₹18,951 Cr",
+          "profitGrowth": "+12.1%",
+          "callDate": "Jan 19, 2024",
+          "status": "upcoming",
+          "recordings": []
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "HDFC Bank",
+      "symbol": "HDFCBANK",
+      "sector": "Banking",
+      "quarters": [
+        {
+          "quarter": "Q3 FY24",
+          "revenue": "₹87,589 Cr",
+          "growth": "+15.2%",
+          "profit": "₹16,511 Cr",
+          "profitGrowth": "+33.7%",
+          "callDate": "Jan 20, 2024",
+          "status": "completed",
+          "recordings": [
+            { "type": "earnings-call", "duration": "38 min", "url": "#" },
+            { "type": "presentation", "pages": "25 slides", "url": "#" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Wipro Limited",
+      "symbol": "WIPRO",
+      "sector": "IT Services",
+      "quarters": [
+        {
+          "quarter": "Q3 FY24",
+          "revenue": "₹22,208 Cr",
+          "growth": "-2.3%",
+          "profit": "₹3,003 Cr",
+          "profitGrowth": "+5.1%",
+          "callDate": "Jan 12, 2024",
+          "status": "completed",
+          "recordings": [
+            { "type": "earnings-call", "duration": "40 min", "url": "#" },
+            { "type": "presentation", "pages": "30 slides", "url": "#" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "State Bank of India",
+      "symbol": "SBIN",
+      "sector": "Banking",
+      "quarters": [
+        {
+          "quarter": "Q3 FY24",
+          "revenue": "₹1,20,432 Cr",
+          "growth": "+12.8%",
+          "profit": "₹10,891 Cr",
+          "profitGrowth": "+28.2%",
+          "callDate": "Feb 5, 2024",
+          "status": "upcoming",
+          "recordings": []
+        }
+      ]
+    }
+  ]
+}

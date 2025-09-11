@@ -2,62 +2,86 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Play, FileText, Calendar, TrendingUp, TrendingDown } from "lucide-react";
-
-const sampleCompanies = [
-  {
-    id: 1,
-    name: "Tata Consultancy Services",
-    symbol: "TCS",
-    quarter: "Q3 FY24",
-    revenue: "₹59,162 Cr",
-    growth: "+4.1%",
-    profit: "₹11,058 Cr",
-    profitGrowth: "+7.2%",
-    callDate: "Jan 11, 2024",
-    status: "completed",
-    recordings: [
-      { type: "earnings-call", duration: "45 min", url: "#" },
-      { type: "presentation", pages: "32 slides", url: "#" }
-    ]
-  },
-  {
-    id: 2,
-    name: "Infosys Limited",
-    symbol: "INFY",
-    quarter: "Q3 FY24",
-    revenue: "₹37,923 Cr",
-    growth: "+1.6%",
-    profit: "₹6,586 Cr",
-    profitGrowth: "+7.9%",
-    callDate: "Jan 11, 2024",
-    status: "completed",
-    recordings: [
-      { type: "earnings-call", duration: "42 min", url: "#" },
-      { type: "presentation", pages: "28 slides", url: "#" }
-    ]
-  },
-  {
-    id: 3,
-    name: "Reliance Industries",
-    symbol: "RIL",
-    quarter: "Q3 FY24",
-    revenue: "₹2,35,122 Cr",
-    growth: "+8.8%",
-    profit: "₹18,951 Cr",
-    profitGrowth: "+12.1%",
-    callDate: "Jan 19, 2024",
-    status: "upcoming",
-    recordings: []
-  }
-];
+import { Input } from "@/components/ui/input";
+import { Download, Play, FileText, Calendar, TrendingUp, TrendingDown, Search, Plus } from "lucide-react";
+import { useState, useMemo } from "react";
+import companiesData from "@/data/companies.json";
 
 const QuarterData = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCompanies, setSelectedCompanies] = useState<string[]>(["TCS", "INFY", "RIL"]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Filter companies based on search term
+  const filteredCompanies = useMemo(() => {
+    if (!searchTerm) return [];
+    return companiesData.companies.filter(company =>
+      company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
+  // Get companies to display in tabs
+  const displayCompanies = useMemo(() => {
+    return companiesData.companies.filter(company =>
+      selectedCompanies.includes(company.symbol)
+    );
+  }, [selectedCompanies]);
+
+  const handleCompanySelect = (company: any) => {
+    if (!selectedCompanies.includes(company.symbol)) {
+      setSelectedCompanies(prev => [...prev, company.symbol]);
+    }
+    setSearchTerm("");
+    setShowSuggestions(false);
+  };
+
+  const removeCompany = (symbol: string) => {
+    setSelectedCompanies(prev => prev.filter(s => s !== symbol));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-dashboard-header">Quarterly Earnings Data</h2>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search companies (e.g., TCS, HDFC Bank)"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setShowSuggestions(e.target.value.length > 0);
+                }}
+                onFocus={() => setShowSuggestions(searchTerm.length > 0)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className="pl-10 w-80"
+              />
+            </div>
+            
+            {showSuggestions && filteredCompanies.length > 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-auto">
+                {filteredCompanies.map((company) => (
+                  <div
+                    key={company.id}
+                    className="p-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
+                    onClick={() => handleCompanySelect(company)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{company.name}</p>
+                        <p className="text-sm text-muted-foreground">{company.symbol} • {company.sector}</p>
+                      </div>
+                      <Plus className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
           <Badge variant="outline" className="border-info text-info">
             <Calendar className="w-3 h-3 mr-1" />
             Q3 FY24 Season
@@ -65,107 +89,120 @@ const QuarterData = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="TCS" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          {sampleCompanies.map((company) => (
-            <TabsTrigger key={company.id} value={company.symbol}>
-              {company.symbol}
+      <Tabs defaultValue={displayCompanies[0]?.symbol} className="w-full">
+        <TabsList className={`grid w-full grid-cols-${Math.min(displayCompanies.length, 6)}`}>
+          {displayCompanies.map((company) => (
+            <TabsTrigger key={company.id} value={company.symbol} className="relative group">
+              <span>{company.symbol}</span>
+              {displayCompanies.length > 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeCompany(company.symbol);
+                  }}
+                  className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ×
+                </button>
+              )}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {sampleCompanies.map((company) => (
+        {displayCompanies.map((company) => (
           <TabsContent key={company.id} value={company.symbol} className="space-y-4">
-            <Card className="bg-dashboard-card border-border hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div>
-                      <CardTitle className="text-lg">{company.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{company.symbol} • {company.quarter}</p>
+            {company.quarters.map((quarter, qIndex) => (
+              <Card key={qIndex} className="bg-dashboard-card border-border hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div>
+                        <CardTitle className="text-lg">{company.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{company.symbol} • {quarter.quarter} • {company.sector}</p>
+                      </div>
                     </div>
+                    <Badge 
+                      variant={quarter.status === "completed" ? "default" : "secondary"}
+                      className={quarter.status === "completed" ? "bg-success text-success-foreground" : ""}
+                    >
+                      {quarter.status}
+                    </Badge>
                   </div>
-                  <Badge 
-                    variant={company.status === "completed" ? "default" : "secondary"}
-                    className={company.status === "completed" ? "bg-success text-success-foreground" : ""}
-                  >
-                    {company.status}
-                  </Badge>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Revenue</p>
-                    <div className="flex items-center space-x-2">
-                      <p className="font-semibold">{company.revenue}</p>
-                      <div className={`flex items-center text-xs ${
-                        company.growth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
-                      }`}>
-                        {company.growth.startsWith('+') ? 
-                          <TrendingUp className="w-3 h-3 mr-1" /> : 
-                          <TrendingDown className="w-3 h-3 mr-1" />
-                        }
-                        {company.growth}
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Revenue</p>
+                      <div className="flex items-center space-x-2">
+                        <p className="font-semibold">{quarter.revenue}</p>
+                        <div className={`flex items-center text-xs ${
+                          quarter.growth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
+                        }`}>
+                          {quarter.growth.startsWith('+') ? 
+                            <TrendingUp className="w-3 h-3 mr-1" /> : 
+                            <TrendingDown className="w-3 h-3 mr-1" />
+                          }
+                          {quarter.growth}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Net Profit</p>
+                      <div className="flex items-center space-x-2">
+                        <p className="font-semibold">{quarter.profit}</p>
+                        <div className={`flex items-center text-xs ${
+                          quarter.profitGrowth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
+                        }`}>
+                          {quarter.profitGrowth.startsWith('+') ? 
+                            <TrendingUp className="w-3 h-3 mr-1" /> : 
+                            <TrendingDown className="w-3 h-3 mr-1" />
+                          }
+                          {quarter.profitGrowth}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Call Date</p>
+                      <p className="font-semibold">{quarter.callDate}</p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">Resources</p>
+                      <div className="flex flex-wrap gap-2">
+                        {quarter.recordings.map((recording, index) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                          >
+                            {recording.type === "earnings-call" ? (
+                              <>
+                                <Play className="w-3 h-3 mr-1" />
+                                Call ({recording.duration})
+                              </>
+                            ) : (
+                              <>
+                                <FileText className="w-3 h-3 mr-1" />
+                                Slides ({recording.pages})
+                              </>
+                            )}
+                          </Button>
+                        ))}
+                        {quarter.recordings.length === 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            Pending
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Net Profit</p>
-                    <div className="flex items-center space-x-2">
-                      <p className="font-semibold">{company.profit}</p>
-                      <div className={`flex items-center text-xs ${
-                        company.profitGrowth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
-                      }`}>
-                        {company.profitGrowth.startsWith('+') ? 
-                          <TrendingUp className="w-3 h-3 mr-1" /> : 
-                          <TrendingDown className="w-3 h-3 mr-1" />
-                        }
-                        {company.profitGrowth}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Call Date</p>
-                    <p className="font-semibold">{company.callDate}</p>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Resources</p>
-                    <div className="flex flex-wrap gap-2">
-                      {company.recordings.map((recording, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="sm"
-                          className="h-8 px-2 text-xs"
-                        >
-                          {recording.type === "earnings-call" ? (
-                            <>
-                              <Play className="w-3 h-3 mr-1" />
-                              Call ({recording.duration})
-                            </>
-                          ) : (
-                            <>
-                              <FileText className="w-3 h-3 mr-1" />
-                              Slides ({recording.pages})
-                            </>
-                          )}
-                        </Button>
-                      ))}
-                      {company.recordings.length === 0 && (
-                        <Badge variant="secondary" className="text-xs">
-                          Pending
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
         ))}
       </Tabs>
