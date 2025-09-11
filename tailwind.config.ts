@@ -57,6 +57,31 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        dashboard: {
+          bg: "hsl(var(--dashboard-bg))",
+          card: "hsl(var(--dashboard-card))",
+          header: "hsl(var(--dashboard-header))",
+        },
+        financial: {
+          positive: "hsl(var(--financial-positive))",
+          negative: "hsl(var(--financial-negative))",
+        },
+        chart: {
+          primary: "hsl(var(--chart-primary))",
+          secondary: "hsl(var(--chart-secondary))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
