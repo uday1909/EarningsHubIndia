@@ -65,146 +65,109 @@ const QuarterData = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All Companies</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="live">Live</TabsTrigger>
+      <Tabs defaultValue="TCS" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          {sampleCompanies.map((company) => (
+            <TabsTrigger key={company.id} value={company.symbol}>
+              {company.symbol}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="all" className="space-y-4">
-          <div className="grid gap-4">
-            {sampleCompanies.map((company) => (
-              <Card key={company.id} className="bg-dashboard-card border-border hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div>
-                        <CardTitle className="text-lg">{company.name}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{company.symbol} • {company.quarter}</p>
-                      </div>
+        {sampleCompanies.map((company) => (
+          <TabsContent key={company.id} value={company.symbol} className="space-y-4">
+            <Card className="bg-dashboard-card border-border hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div>
+                      <CardTitle className="text-lg">{company.name}</CardTitle>
+                      <p className="text-sm text-muted-foreground">{company.symbol} • {company.quarter}</p>
                     </div>
-                    <Badge 
-                      variant={company.status === "completed" ? "default" : "secondary"}
-                      className={company.status === "completed" ? "bg-success text-success-foreground" : ""}
-                    >
-                      {company.status}
-                    </Badge>
                   </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Revenue</p>
-                      <div className="flex items-center space-x-2">
-                        <p className="font-semibold">{company.revenue}</p>
-                        <div className={`flex items-center text-xs ${
-                          company.growth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
-                        }`}>
-                          {company.growth.startsWith('+') ? 
-                            <TrendingUp className="w-3 h-3 mr-1" /> : 
-                            <TrendingDown className="w-3 h-3 mr-1" />
-                          }
-                          {company.growth}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Net Profit</p>
-                      <div className="flex items-center space-x-2">
-                        <p className="font-semibold">{company.profit}</p>
-                        <div className={`flex items-center text-xs ${
-                          company.profitGrowth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
-                        }`}>
-                          {company.profitGrowth.startsWith('+') ? 
-                            <TrendingUp className="w-3 h-3 mr-1" /> : 
-                            <TrendingDown className="w-3 h-3 mr-1" />
-                          }
-                          {company.profitGrowth}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Call Date</p>
-                      <p className="font-semibold">{company.callDate}</p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">Resources</p>
-                      <div className="flex flex-wrap gap-2">
-                        {company.recordings.map((recording, index) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            size="sm"
-                            className="h-8 px-2 text-xs"
-                          >
-                            {recording.type === "earnings-call" ? (
-                              <>
-                                <Play className="w-3 h-3 mr-1" />
-                                Call ({recording.duration})
-                              </>
-                            ) : (
-                              <>
-                                <FileText className="w-3 h-3 mr-1" />
-                                Slides ({recording.pages})
-                              </>
-                            )}
-                          </Button>
-                        ))}
-                        {company.recordings.length === 0 && (
-                          <Badge variant="secondary" className="text-xs">
-                            Pending
-                          </Badge>
-                        )}
+                  <Badge 
+                    variant={company.status === "completed" ? "default" : "secondary"}
+                    className={company.status === "completed" ? "bg-success text-success-foreground" : ""}
+                  >
+                    {company.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Revenue</p>
+                    <div className="flex items-center space-x-2">
+                      <p className="font-semibold">{company.revenue}</p>
+                      <div className={`flex items-center text-xs ${
+                        company.growth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
+                      }`}>
+                        {company.growth.startsWith('+') ? 
+                          <TrendingUp className="w-3 h-3 mr-1" /> : 
+                          <TrendingDown className="w-3 h-3 mr-1" />
+                        }
+                        {company.growth}
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="completed">
-          <div className="grid gap-4">
-            {sampleCompanies.filter(c => c.status === "completed").map((company) => (
-              <Card key={company.id} className="bg-dashboard-card">
-                <CardContent className="p-6">
-                  <p className="text-center text-muted-foreground">
-                    {company.name} - {company.quarter} results available
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="upcoming">
-          <div className="grid gap-4">
-            {sampleCompanies.filter(c => c.status === "upcoming").map((company) => (
-              <Card key={company.id} className="bg-dashboard-card">
-                <CardContent className="p-6">
-                  <p className="text-center text-muted-foreground">
-                    {company.name} - {company.quarter} earnings call scheduled for {company.callDate}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="live">
-          <Card className="bg-dashboard-card">
-            <CardContent className="p-6">
-              <p className="text-center text-muted-foreground">No live earnings calls at the moment</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Net Profit</p>
+                    <div className="flex items-center space-x-2">
+                      <p className="font-semibold">{company.profit}</p>
+                      <div className={`flex items-center text-xs ${
+                        company.profitGrowth.startsWith('+') ? 'text-financial-positive' : 'text-financial-negative'
+                      }`}>
+                        {company.profitGrowth.startsWith('+') ? 
+                          <TrendingUp className="w-3 h-3 mr-1" /> : 
+                          <TrendingDown className="w-3 h-3 mr-1" />
+                        }
+                        {company.profitGrowth}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Call Date</p>
+                    <p className="font-semibold">{company.callDate}</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Resources</p>
+                    <div className="flex flex-wrap gap-2">
+                      {company.recordings.map((recording, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                        >
+                          {recording.type === "earnings-call" ? (
+                            <>
+                              <Play className="w-3 h-3 mr-1" />
+                              Call ({recording.duration})
+                            </>
+                          ) : (
+                            <>
+                              <FileText className="w-3 h-3 mr-1" />
+                              Slides ({recording.pages})
+                            </>
+                          )}
+                        </Button>
+                      ))}
+                      {company.recordings.length === 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          Pending
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
