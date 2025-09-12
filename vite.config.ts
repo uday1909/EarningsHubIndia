@@ -8,6 +8,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: [
+      "earningshubindia.onrender.com", // 👈 your Render domain
+      "localhost",
+      "127.0.0.1",
+    ],
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
