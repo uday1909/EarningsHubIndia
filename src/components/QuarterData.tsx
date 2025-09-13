@@ -1,17 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search, FileText } from "lucide-react";
 import { useState, useMemo } from "react";
-import data from "@/data/companies.json"; // your JSON
+import data from "@/data/companies.json"; // your new JSON
 
 const QuarterData = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]); // start empty
+  const [selectedCompanies, setSelectedCompanies] = useState<string[]>(["PHOENIXLTD"]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Convert JSON into array
+  // Convert JSON into an array for easier mapping
   const companies = useMemo(() => {
     return Object.keys(data).map((symbol) => ({
       symbol,
@@ -19,7 +20,7 @@ const QuarterData = () => {
     }));
   }, []);
 
-  // Search filter
+  // Filter companies for search suggestions
   const filteredCompanies = useMemo(() => {
     if (!searchTerm) return [];
     return companies.filter((company) =>
@@ -27,7 +28,7 @@ const QuarterData = () => {
     );
   }, [searchTerm, companies]);
 
-  // Companies displayed in tabs
+  // Get companies currently displayed
   const displayCompanies = useMemo(() => {
     return companies.filter((c) => selectedCompanies.includes(c.symbol));
   }, [selectedCompanies, companies]);
@@ -48,9 +49,7 @@ const QuarterData = () => {
     <div className="space-y-6">
       {/* Header + Search */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-dashboard-header">
-          Quarterly Earnings Data
-        </h2>
+        <h2 className="text-2xl font-bold text-dashboard-header">Quarterly Earnings Data</h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -80,79 +79,55 @@ const QuarterData = () => {
         </div>
       </div>
 
-      {/* Only show Tabs when companies are selected */}
-      {displayCompanies.length > 0 && (
-        <Tabs defaultValue={displayCompanies[0]?.symbol} className="w-full">
-          <TabsList
-            className={`grid w-full grid-cols-${Math.min(
-              displayCompanies.length,
-              6
-            )}`}
-          >
-            {displayCompanies.map((company) => (
-              <TabsTrigger
-                key={company.symbol}
-                value={company.symbol}
-                className="relative group"
-              >
-                <span>{company.symbol}</span>
-                {displayCompanies.length > 0 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeCompany(company.symbol);
-                    }}
-                    className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    ×
-                  </button>
-                )}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {/* Quarter cards */}
+      {/* Tabs for selected companies */}
+      <Tabs defaultValue={displayCompanies[0]?.symbol} className="w-full">
+        <TabsList className={`grid w-full grid-cols-${Math.min(displayCompanies.length, 6)}`}>
           {displayCompanies.map((company) => (
-            <TabsContent
-              key={company.symbol}
-              value={company.symbol}
-              className="space-y-4"
-            >
-              {Object.entries(company.quarters).map(([quarter, resources]) => (
-                <Card
-                  key={quarter}
-                  className="bg-dashboard-card border-border hover:shadow-md transition-shadow"
+            <TabsTrigger key={company.symbol} value={company.symbol} className="relative group">
+              <span>{company.symbol}</span>
+              {displayCompanies.length > 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeCompany(company.symbol);
+                  }}
+                  className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <CardHeader>
-                    <CardTitle>
-                      {company.symbol} • {quarter}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-wrap gap-2">
-                    {(resources as any[]).map((res, i) => (
-                      <Button
-                        key={i}
-                        asChild
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-2 text-xs"
-                      >
-                        <a
-                          href={res.file}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <FileText className="w-3 h-3 mr-1" /> {res.name}
-                        </a>
-                      </Button>
-                    ))}
-                  </CardContent>
-                </Card>
-              ))}
-            </TabsContent>
+                  ×
+                </button>
+              )}
+            </TabsTrigger>
           ))}
-        </Tabs>
-      )}
+        </TabsList>
+
+        {/* Quarter cards */}
+        {displayCompanies.map((company) => (
+          <TabsContent key={company.symbol} value={company.symbol} className="space-y-4">
+            {Object.entries(company.quarters).map(([quarter, resources]) => (
+              <Card key={quarter} className="bg-dashboard-card border-border hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle>{company.symbol} • {quarter}</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-2">
+                  {(resources as any[]).map((res, i) => (
+                    <Button
+                      key={i}
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2 text-xs"
+                    >
+                      <a href={res.file} target="_blank" rel="noopener noreferrer">
+                        <FileText className="w-3 h-3 mr-1" /> {res.name}
+                      </a>
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 };
